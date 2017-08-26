@@ -1,0 +1,3 @@
+[submodule "nueral_net"]
+	path = nueral_net
+	url = https://github.com/bearda/nueral_net.git
