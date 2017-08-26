@@ -4,6 +4,7 @@
 from neural import Node,Row
 from Tkinter import *
 from random import randint
+import sys
 
 
 
@@ -184,4 +185,6 @@ class NodeDMenu(Toplevel):
 
 
 if __name__ == "__main__":
-    netGame(3,[4,2])
+    inputCount = int (sys.argv[1])
+    nodeCounts = [ int(arg) for arg in sys.argv[2:]]
+    netGame(inputCount, nodeCounts)
