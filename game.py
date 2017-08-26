@@ -8,23 +8,22 @@ from random import randint
 
 
 class netGame():
-    def __init__(self):
+    def __init__(self, inputCount, nodeCounts):
         #make the window
         self.tkRoot = Tk()
+        self.inputCount = inputCount
         #How many nodes do we want in a row?
-        self.nodeCount = 6
-        #how many layers?
-        self.layerCount = 2
+        self.nodeCounts = nodeCounts
         #make the main row, and the command row
         self.mainRow = Frame(self.tkRoot)
         self.commandRow = Frame(self.tkRoot)
         #make some user inputs for now
         self.inputCol = Frame(self.mainRow)
-        self.makeInputs(self.inputCol, self.nodeCount)
+        self.makeInputs(self.inputCol, self.inputCount)
         self.inputCol.grid(row=0,column=0)
         #Make and show the nodes
         self.nodeCol = Frame(self.mainRow)
-        self.makeNodes(self.nodeCol, self.nodeCount, self.layerCount)
+        self.makeNodes(self.nodeCol, self.inputCount, self.nodeCounts)
         self.nodeCol.grid(row=0,column=1)
 
         #make the command row
@@ -36,11 +35,11 @@ class netGame():
         print ("Off to the races!")
         self.tkRoot.mainloop()
 
-    def makeInputs(self, master, nodeCount):
+    def makeInputs(self, master, inputCount):
         #make three inputs
         self.inputList = []
         i = 0
-        while i < nodeCount:
+        while i < inputCount:
 
             inputFrame = Frame(master)
             label = Label(inputFrame, text="Input %d" %(i+1))
@@ -59,26 +58,28 @@ class netGame():
             i += 1
 
 
-    def makeNodes(self, master, nodeCount, layerCount):
+    def makeNodes(self, master, inputCount, nodeCounts):
         i = 0
         self.layers = []
         self.layerLabelVars = []
-        while i < layerCount:
+        prevCount = inputCount
+        while i < len(nodeCounts):
             #make a from for the layer
             frameLayer = Frame(master)
-            layer, labelVars = self.makeNodeLayer(frameLayer, nodeCount)
+            layer, labelVars = self.makeNodeLayer(frameLayer, prevCount, nodeCounts[i])
+            prevCount = nodeCounts[i]
             self.layers.append(layer)
             self.layerLabelVars.append(labelVars)
 
             frameLayer.grid(row=0, column=i)
             i += 1
             
-    def makeNodeLayer(self, master, nodeCount):
+    def makeNodeLayer(self, master, prevCount, nodeCount):
         layer = Row(nodeCount)
         #set the inputs
-        layer.setInputLists([[0] * nodeCount] * nodeCount)
+        layer.setInputLists([[0] * prevCount] * nodeCount)
         #we also need to set the list of weights
-        weights = [[randint(-2,2) for i in range(nodeCount)] for j in range(nodeCount)]
+        weights = [[randint(-2,2) for i in range(prevCount)] for j in range(nodeCount)]
         print (weights)
         layer.setWeightLists(weights)
 
@@ -121,16 +122,16 @@ class netGame():
         for spinner in self.inputList:
             inputSignals.append(int(spinner.get()))
         
-        #technically, we need a input signal list for each node so...
-        inputSignalLists = [inputSignals] * self.nodeCount
 
         for layer in self.layers:
+            #technically, we need a input signal list for each node so...
+            inputSignalLists = [inputSignals] * layer.getSize()
             layer.setInputLists(inputSignalLists)
             layer.updateNodes()
 
             #output of the this row is the input of the next
             outputSignals = layer.getSignalList()
-            inputSignalLists = [outputSignals] * self.nodeCount
+            inputSignals = outputSignals
         
 
     def showNodeValues(self):
@@ -183,4 +184,4 @@ class NodeDMenu(Toplevel):
 
 
 if __name__ == "__main__":
-    netGame()
+    netGame(3,[4,2])
