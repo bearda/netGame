@@ -76,9 +76,11 @@ class netGame():
     def makeNodeLayer(self, master, nodeCount):
         layer = Row(nodeCount)
         #set the inputs
-        layer.setInputLists([[0] * self.nodeCount] * self.nodeCount)
+        layer.setInputLists([[0] * nodeCount] * nodeCount)
         #we also need to set the list of weights
-        layer.setWeightLists([[1] * self.nodeCount] * self.nodeCount)
+        weights = [[randint(-2,2) for i in range(nodeCount)] for j in range(nodeCount)]
+        print (weights)
+        layer.setWeightLists(weights)
 
         #now that we have the data, present it
         layerLabelVars = []
