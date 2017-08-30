@@ -1,0 +1,7 @@
+This is a first draft for the rules of the game.
+
+Objective: player1 wins if the value of the node in the middle is +5. player2 wins if it is -5.
+
+The players place pieces on the nodes to add to their output signal. They have a limited number of + tokens and - tokens.
+By placing a token on a node, the value of the node is revealed.
+If the signal on the node is exactly zero, any token on top is removed (which will cause the signal to be not 0)
