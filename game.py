@@ -2,11 +2,25 @@
 #Try to set above or below a given threshold. The connections are unkown
 
 from neural import Node,Row
-from Tkinter import *
+from NodeMenu import NodeMenu
 from random import randint
+from Tkinter import *
 import sys
 
+class GameNode(Node):
+    def __init__(self):
+        #what pieces are on this node?
+        self.piece = 0
+        Node.__init__(self)
 
+class GameLayer(Row):
+
+    def Initialize(self, size):
+        self.nodeList = []
+        i = 0
+        while (i < size):
+            self.addNode(GameNode())
+            i += 1
 
 class netGame():
     def __init__(self, inputCount, nodeCounts):
@@ -76,7 +90,7 @@ class netGame():
             i += 1
             
     def makeNodeLayer(self, master, prevCount, nodeCount):
-        layer = Row(nodeCount)
+        layer = GameLayer(nodeCount)
         #set the inputs
         layer.setInputLists([[0] * prevCount] * nodeCount)
         #we also need to set the list of weights
@@ -93,7 +107,7 @@ class netGame():
             nodeFrame = Frame(master)
             displayFrame = Frame(nodeFrame)
             buttonFrame = Frame(nodeFrame)
-            Button(buttonFrame,text="d", command = lambda node=layer.nodeList[i]:NodeDMenu(self.tkRoot, node)).grid()
+            Button(buttonFrame,text="d", command = lambda node=layer.nodeList[i]:NodeMenu(self.tkRoot, node)).grid()
             label = Label(displayFrame, text="Node %d" % (i+1))
             label.grid()
             var = StringVar()
@@ -142,45 +156,6 @@ class netGame():
             print (signals)
             for var, signal in zip(labelVars, signals):
                 var.set(signal)
-
-class NodeDMenu(Toplevel):
-    def __init__(self, master, node):
-        Toplevel.__init__(self, master)
-        self.grab_set()
-
-        #set data
-        self.node = node
-
-        #make frames
-        self.displayFrame = Frame(self)
-        self.populateDisplayFrame(self.displayFrame)
-        self.displayFrame.grid()
-
-        self.buttonFrame = Frame(self)
-        Button(self.buttonFrame, text="Randomize", command=self.randomize).grid(row=0, column=0)
-        Button(self.buttonFrame, text="Back", command=self.destroy).grid(row=0, column=1)
-        self.buttonFrame.grid()
-        print ("off to the sub races!")
-
-    def populateDisplayFrame(self, master):
-        self.displayVar = StringVar()
-        self.updateString()
-
-        Label(self.displayFrame, text="Node Input Weights:").grid(padx=10,pady=(10,0))
-        Label(self.displayFrame, textvariable=self.displayVar).grid()
-
-    def updateString(self):
-        #we have a tought string to make.
-        #it is made of a unknown number of digits, seperated by spaces
-        newString = ""
-        for weight in self.node.weights:
-            newString += "%d " % weight
-            self.displayVar.set(newString)
-
-    def randomize(self):
-        #first assign each weight a random number between -2 and 2
-        self.node.weights = [randint(-2,2) for i in range(len(self.node.weights))]
-        self.updateString()
 
 
 
