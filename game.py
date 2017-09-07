@@ -12,6 +12,13 @@ class GameNode(Node):
         #what pieces are on this node?
         self.piece = 0
         Node.__init__(self)
+    def updateSignal(self):
+        signal = 0
+        for pair in zip(self.inputs,self.weights):
+            signal += pair[0]*pair[1]
+
+        self.setSignal(signal + self.piece)
+
 
 class GameLayer(Row):
 
@@ -107,7 +114,9 @@ class netGame():
             nodeFrame = Frame(master)
             displayFrame = Frame(nodeFrame)
             buttonFrame = Frame(nodeFrame)
-            Button(buttonFrame,text="d", command = lambda node=layer.nodeList[i]:NodeMenu(self.tkRoot, node)).grid()
+            b = Button(buttonFrame,text="d", bg="White")
+            b.configure(command = lambda node=layer.nodeList[i],b_=b:self.NodeMenuDriver(self.tkRoot, node, b_))
+            b.grid()
             label = Label(displayFrame, text="Node %d" % (i+1))
             label.grid()
             var = StringVar()
@@ -157,6 +166,8 @@ class netGame():
             for var, signal in zip(labelVars, signals):
                 var.set(signal)
 
+    def NodeMenuDriver(self, master, node, b):
+        NodeMenu(master, node, self.update, b)
 
 
 if __name__ == "__main__":

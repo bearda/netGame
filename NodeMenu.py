@@ -2,12 +2,14 @@ from Tkinter import *
 from random import randint
 
 class NodeMenu(Toplevel):
-    def __init__(self, master, node):
+    def __init__(self, master, node, update, button):
         Toplevel.__init__(self, master)
         self.grab_set()
 
         #set data
         self.node = node
+        self.update = update
+        self.b = button
 
         #make frames
         self.displayFrame = Frame(self)
@@ -16,7 +18,7 @@ class NodeMenu(Toplevel):
 
         self.buttonFrame = Frame(self)
         Button(self.buttonFrame, text="Randomize", command=self.randomize).grid(row=0, column=0)
-        Button(self.buttonFrame, text="Back", command=self.destroy).grid(row=0, column=1)
+        Button(self.buttonFrame, text="Back", command=self.exit).grid(row=0, column=1)
         self.buttonFrame.grid()
 
         self.pieceFrame = Frame(self)
@@ -54,5 +56,16 @@ class NodeMenu(Toplevel):
     def setPiece(self, value):
         self.node.piece = value
         self.updateStrings()
+
+    def exit(self):
+        self.update()
+        if self.node.piece == -1:
+            self.b.configure(bg="Red")
+        elif self.node.piece == 1:
+            self.b.configure(bg="Green")
+        else:
+            self.b.configure(bg="White")
+
+        self.destroy()
 
 
