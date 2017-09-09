@@ -36,17 +36,25 @@ class netGame():
         self.inputCount = inputCount
         #How many nodes do we want in a row?
         self.nodeCounts = nodeCounts
+        #Which type of piece are we currently placing?
+        self.curPiece = 0
+
+        #setup graphics
         #make the main row, and the command row
         self.mainRow = Frame(self.tkRoot)
         self.commandRow = Frame(self.tkRoot)
+        #piece column
+        self.pieceCol = Frame(self.mainRow)
+        self.addPieces(self.pieceCol)
+        self.pieceCol.grid(row=0,column=0)
         #make some user inputs for now
         self.inputCol = Frame(self.mainRow)
         self.makeInputs(self.inputCol, self.inputCount)
-        self.inputCol.grid(row=0,column=0)
+        self.inputCol.grid(row=0,column=1)
         #Make and show the nodes
         self.nodeCol = Frame(self.mainRow)
         self.makeNodes(self.nodeCol, self.inputCount, self.nodeCounts)
-        self.nodeCol.grid(row=0,column=1)
+        self.nodeCol.grid(row=0,column=2)
 
         #make the command row
         self.addCommands(self.commandRow)
@@ -115,7 +123,7 @@ class netGame():
             displayFrame = Frame(nodeFrame)
             buttonFrame = Frame(nodeFrame)
             b = Button(buttonFrame,text="d", bg="White")
-            b.configure(command = lambda node=layer.nodeList[i],b_=b:self.NodeMenuDriver(self.tkRoot, node, b_))
+            b.configure(command = lambda node=layer.nodeList[i],b_=b:self.setPiece(b_, node))
             b.grid()
             label = Label(displayFrame, text="Node %d" % (i+1))
             label.grid()
@@ -131,6 +139,20 @@ class netGame():
             i += 1
 
         return layer, layerLabelVars
+
+    def addPieces(self, master):
+        upperFrame = Frame(master, width=60, height=60)
+        upperFrame.columnconfigure(0, weight=10)
+        upperFrame.rowconfigure(0, weight=10)
+        upperFrame.grid_propagate(False)
+        Button(upperFrame, activebackground="#000fff000", bg="#000aaa000", command= lambda : self.setCurPiece(1)).grid(sticky="nsew")
+        upperFrame.grid(row=0, pady=5, padx=5)
+        downerFrame = Frame(master, width=60, height=60)
+        downerFrame.columnconfigure(0, weight=10)
+        downerFrame.rowconfigure(0, weight=10)
+        downerFrame.grid_propagate(False)
+        Button(downerFrame, activebackground="#fff000000", bg="#aaa000000", command= lambda : self.setCurPiece(-1)).grid(sticky="nsew")
+        downerFrame.grid(row=1, pady=5, padx=5)
 
     def addCommands(self, master):
         #add buttons
@@ -168,6 +190,20 @@ class netGame():
 
     def NodeMenuDriver(self, master, node, b):
         NodeMenu(master, node, self.update, b)
+
+    def setCurPiece(self, i):
+        self.curPiece = i
+
+    def setPiece(self, b, node):
+        node.piece = self.curPiece
+        if node.piece == -1:
+            b.configure(bg="Red", activebackground="Red")
+        elif node.piece == 1:
+            b.configure(bg="Green", activebackground="Green")
+        else:
+            b.configure(bg="White")
+
+        self.update()
 
 
 if __name__ == "__main__":
